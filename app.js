@@ -37,9 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentStreakDisplay = document.getElementById("currentStreak");
     const bestStreakDisplay = document.getElementById("bestStreak");
 
-    //renderLogs();
+
     updateSummary();
     updateStreaks();
+
+
+
     // --- 3. HELPER FUNCTIONS ---
 
     function getSelectedDuration() {
@@ -76,8 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const totalSessions = state.logs.length;
 
-        totalFocusDisplay.textContent = `Total Focus Time: ${totalMinutes} minutes`;
-        totalSessionsDisplay.textContent = `Sessions Completed: ${totalSessions}`;
+        totalFocusDisplay.textContent = `⏱ Total Focus: ${totalMinutes} mins`;
+        totalSessionsDisplay.textContent = `📘 Sessions Completed: ${totalSessions}`;
     }
 
     function updateUI() {
