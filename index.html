@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Focus Session</title>
+</head>
+<body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bliss Hour Session</title>
+     <link rel="stylesheet" href="newstyles.css">
+</head>
+<body>
+<body>
+    <div class="container">
+    <h1 class="title">BLISS HOUR</h1>
+    <span class="tagline">Focus Session Tracker</span>
+
+    <div id="input-group" class="input-group">
+        <p class="task-detail">What is your Core Goal Today:</p>
+        <input type="text" id="taskTitleInput" placeholder="Enter your goal..." required>
+    </div>
+
+    
+
+    <div id="radio-group">
+        <fieldset>
+            <legend>Choose duration:</legend>
+            <input type="radio" id="twenty" name="duration" value="5">
+            <label for="twenty">20 Minutes (Quick Focus)</label><br>
+            
+            <input type="radio" id="forty" name="duration" value="10">
+            <label for="forty">40 Minutes (Deep Work)</label><br>
+
+            <input type="radio" id="sixty" name="duration" value="20">
+            <label for="forty">60 Minutes (Bliss Hour)</label><br>
+            <div class="output" id="output"></div>
+        </fieldset>
+    </div>
+    <p id="warning-section" class="warning-message hidden"></p>
+
+    <div class="controls">
+        <button type="button" id="toggleButton">Start Now</button>
+        <button type="button" id="theResetButton" class="hidden">Reset</button>
+    </div>
+
+    <hr>
+    <p id="session-comp-sec" class="session-msg"></p>
+
+    <div class="status-container">
+        <h4 id="taskTitleDisplay"></h4>
+        <h4 id="statusText" class="task-status">Status: Ready</h4>
+        <p id="timerRemaining" class="hidden">Time Remaining</p>
+        <p id="timerDisplay" class="timer">00:00</p>
+    </div>
+
+        <hr>
+
+    <div id="log-section" class="log-container">
+        <p id="session-write-msg">Session Notes (Disabled while running)</p>
+        <textarea id="notes" placeholder="Write a short reflection about this session..." disabled></textarea>
+        <br>
+        <button id="saveReport" disabled>Save to Log</button>
+        <p id="save-report-section" class="save-report-msg"></p>
+<div class="Statistics">
+    <h3>Records</h3>
+        <p id="totalFocus">Total Focus Time: 0 minutes</p>
+        <p id="totalSessions">Sessions Completed: 0</p>
+        </div>
+        <div class="streak-summary">
+            <p id="currentStreak">🔥 Current Streak: 0 days</p>
+            <p id="bestStreak">🏆 Best Streak: 0 days</p>
+        </div>
+    <div class="log-summary">
+    </div>
+        <h2 class="log-record">Log History:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Goal</th>
+                    <th>Duration (Minutes)</th>
+                    <th>Observation</th>
+                    <th>Deletion</th>
+                </tr>
+            </thead>
+            <tbody id="logTableBody">
+                </tbody>
+        </table>
+    </div>
+
+
+</div>
+<script src="app.js"></script> 
+
+</body>
+</html>
