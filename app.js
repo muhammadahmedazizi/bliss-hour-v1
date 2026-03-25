@@ -241,15 +241,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateStreaks();
     }
     
-    function renderLogs() {
+function renderLogs() {
+
         logTable.innerHTML = "";
 
-        // Sort descending: Newest (large date value) to Oldest (small date value)
-        const sortedLogs = [...state.logs].sort((a, b) => {
-            return new Date(b.date) - new Date(a.date);
-        });
-
-        sortedLogs.forEach(item => {
+        state.logs.toReversed().forEach(item => {
             const newRow = document.createElement('tr');
 
             newRow.innerHTML = `
@@ -258,18 +254,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${item.duration}</td>
                 <td>${item.note}</td>
                 <td>
-                    <button class="delete-btn" data-id="${item.id}">Delete</button>
-                </td>
+                    <button class="delete-btn" data-id="${item.id})">Delete</button>
+               </td>
             `;
 
             // Attach the listener directly to the button inside the loop
+
             newRow.querySelector('.delete-btn').addEventListener('click', () => {
                 var result = confirm("Really, Delete this record?");
                 if (result) {
-                    console.log(result); 
+                    console.log(result);
                     //Logic to delete the item
-                  deleteLog(item.id); 
-                  }; 
+                  deleteLog(item.id);
+                  };
             });
 
             logTable.appendChild(newRow);
