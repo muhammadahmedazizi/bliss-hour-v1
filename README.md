@@ -2,6 +2,14 @@
 
 BlissHour is a lightweight web application designed to help users stay focused by tracking deep work sessions.
 
+## 🧪 Project Story
+
+BlissHour was built as part of a personal experiment to improve focus and consistency through timed work sessions.
+
+Over 30+ days, the app evolved from a simple timer into a complete focus tracking tool with logs, summaries, and streak tracking.
+
+This project reflects both technical learning and habit-building.
+
 ## 🌟 Features
 
 * ⏱ Custom focus durations (20 / 40 / 60 minutes)
