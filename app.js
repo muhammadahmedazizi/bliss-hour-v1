@@ -244,7 +244,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderLogs() {
         logTable.innerHTML = "";
 
-        state.logs.forEach(item => {
+        // Sort descending: Newest (large date value) to Oldest (small date value)
+        const sortedLogs = [...state.logs].sort((a, b) => {
+            return new Date(b.date) - new Date(a.date);
+        });
+
+        sortedLogs.forEach(item => {
             const newRow = document.createElement('tr');
 
             newRow.innerHTML = `
@@ -253,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${item.duration}</td>
                 <td>${item.note}</td>
                 <td>
-                    <button class="delete-btn" data-id="${item.id})">Delete</button>
+                    <button class="delete-btn" data-id="${item.id}">Delete</button>
                 </td>
             `;
 
