@@ -270,3 +270,12 @@ hr {
     color:#2ecc71;
     font-weight: 600;
 }
+
+.show-log {
+  background-color: #4f46e5;
+  color: var(--white);
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+
+}

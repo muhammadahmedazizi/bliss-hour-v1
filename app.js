@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elapsedTime: 0,
         intervalId: null,
         logs: JSON.parse(localStorage.getItem('focusLogs')) || [],
+        showLogStaus: false,
     };
 
   
@@ -36,6 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sesstionWriteMsg = document.querySelector("#session-write-msg"); 
     const currentStreakDisplay = document.getElementById("currentStreak");
     const bestStreakDisplay = document.getElementById("bestStreak");
+    const showLogBtn = document.getElementById("show-log-btn"); 
+    
 
 
     updateSummary();
@@ -123,6 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 notesInput.disabled = false;
                 timerDisplay.classList.remove('green');
                 timerDisplay.classList.add('completed');
+                logSection.classList.remove('hidden'); 
+                showLogBtn.classList.add('hidden');
                 
                 break;
             case 'idle':
@@ -254,6 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderLogs() {
 
+        // logSection.classList.remove('hidden');
         logTable.innerHTML = "";
 
         // ✅ Step 1: Ensure all logs have createdAt
@@ -301,55 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
             logTable.appendChild(newRow);
         });
     }
-
-/*
-function renderLogs() {
-
-        logTable.innerHTML = "";
-
-        const sortedLogs = [...state.logs].sort((a, b) => {
-
-        const dateDiff = new Date(b.createdAt) - new Date(a.createdAt);
-        
-        // If dateDiff is 0, the dates are the same. Sort by ID instead.
-        if (dateDiff === 0) {
-            return b.id - a.id; 
-        }
-        
-        return dateDiff;
-        });
-
-
-        sortedLogs.forEach(item => {
-            const newRow = document.createElement('tr');
-
-            newRow.innerHTML = `
-                <td>${item.createdAt}</td>
-                <td>${item.goal}</td>
-                <td>${item.duration}</td>
-                <td>${item.note}</td>
-                <td>
-                    <button class="delete-btn" data-id="${item.id}">Delete</button>
-               </td>
-            `;
-
-            // Attach the listener directly to the button inside the loop
-
-            newRow.querySelector('.delete-btn').addEventListener('click', () => {
-                var result = confirm("Really, Delete this record?");
-                if (result) {
-                    console.log(result);
-                    //Logic to delete the item
-                  deleteLog(item.id);
-                  };
-            });
-
-            logTable.appendChild(newRow);
-        });
-    } */
-
-    
-
 
 
     function saveToLog() {
@@ -408,4 +365,23 @@ function renderLogs() {
 
     
     saveBtn.addEventListener('click', saveToLog);
+
+
+    showLogBtn.addEventListener('click', () => {
+    let logS = document.getElementById('log-section'); 
+
+    if (state.showLogStaus === false) {
+        // SHOW LOGIC
+        renderLogs(); 
+        logS.classList.remove('hidden'); // Ensure it's visible
+        showLogBtn.textContent = "Hide Log ↑"; // Using Unicode arrow
+        state.showLogStaus = true; // UPDATE STATE
+    }
+    else {
+        // HIDE LOGIC
+        logS.classList.add('hidden'); 
+        showLogBtn.textContent = "Show Log ↓"; // Using Unicode arrow
+        state.showLogStaus = false; // UPDATE STATE
+    }
+});
 });
