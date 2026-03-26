@@ -1,5 +1,7 @@
 # BlissHour – Focus Session Tracker
 
+
+
 BlissHour is a lightweight web application designed to help users stay focused by tracking deep work sessions.
 
 ## 🧪 Project Story

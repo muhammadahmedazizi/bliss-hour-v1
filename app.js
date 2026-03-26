@@ -45,6 +45,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 3. HELPER FUNCTIONS ---
 
+
+    function formatDate(dateString) {
+        return new Date(dateString).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
     function getSelectedDuration() {
         const radios = document.getElementsByName('duration');
         for (let radio of radios) {
@@ -120,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 toggleBtn.textContent = "Start Now";
                 resetButton.classList.add("hidden");
                 radioContainer.classList.remove('hidden');
+                inputGroupDiv.classList.remove('hidden')
                 break;
         }
     }
@@ -240,21 +251,85 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSummary();
         updateStreaks();
     }
-    
-function renderLogs() {
+
+    function renderLogs() {
 
         logTable.innerHTML = "";
 
-        state.logs.toReversed().forEach(item => {
+        // ✅ Step 1: Ensure all logs have createdAt
+        state.logs.forEach(log => {
+            if (!log.createdAt) {
+                log.createdAt = new Date().toISOString();
+            }
+        });
+
+        // ✅ Step 2: Sort logs
+        const sortedLogs = [...state.logs].sort((a, b) => {
+
+            const dateDiff = new Date(b.createdAt) - new Date(a.createdAt);
+
+            if (dateDiff === 0) {
+                return b.id - a.id;
+            }
+
+            return dateDiff;
+        });
+
+        // ✅ Step 3: Render
+        sortedLogs.forEach(item => {
+            
+            const formattedDate = formatDate(item.createdAt);
             const newRow = document.createElement('tr');
 
             newRow.innerHTML = `
-                <td>${item.date}</td>
+                <td>${formattedDate}</td>
                 <td>${item.goal}</td>
                 <td>${item.duration}</td>
                 <td>${item.note}</td>
                 <td>
-                    <button class="delete-btn" data-id="${item.id})">Delete</button>
+                    <button class="delete-btn" data-id="${item.id}">Delete</button>
+                </td>
+            `;
+
+            newRow.querySelector('.delete-btn').addEventListener('click', () => {
+                const result = confirm("Really, Delete this record?");
+                if (result) {
+                    deleteLog(item.id);
+                }
+            });
+
+            logTable.appendChild(newRow);
+        });
+    }
+
+/*
+function renderLogs() {
+
+        logTable.innerHTML = "";
+
+        const sortedLogs = [...state.logs].sort((a, b) => {
+
+        const dateDiff = new Date(b.createdAt) - new Date(a.createdAt);
+        
+        // If dateDiff is 0, the dates are the same. Sort by ID instead.
+        if (dateDiff === 0) {
+            return b.id - a.id; 
+        }
+        
+        return dateDiff;
+        });
+
+
+        sortedLogs.forEach(item => {
+            const newRow = document.createElement('tr');
+
+            newRow.innerHTML = `
+                <td>${item.createdAt}</td>
+                <td>${item.goal}</td>
+                <td>${item.duration}</td>
+                <td>${item.note}</td>
+                <td>
+                    <button class="delete-btn" data-id="${item.id}">Delete</button>
                </td>
             `;
 
@@ -271,7 +346,8 @@ function renderLogs() {
 
             logTable.appendChild(newRow);
         });
-    }
+    } */
+
     
 
 
@@ -280,10 +356,11 @@ function renderLogs() {
         const sessionDuration = getSelectedDuration();
         const newEntry = {
             id: Date.now(),
-            date: new Date().toLocaleDateString(),
+            // date: new Date().toLocaleDateString(),
             goal: taskTitleInput.value || "Untitled Task",
             duration: sessionDuration,
-             note: notesInput.value || "N/A",
+            note: notesInput.value || "N/A",
+            createdAt: new Date().toISOString(),
         };
 
         // Add to our list
