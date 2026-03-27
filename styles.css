@@ -52,7 +52,11 @@ body::selection {
 }
 
 
-
+.log-history-title {
+  display: inline;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
 
 
 /* Form Elements */
@@ -272,10 +276,28 @@ hr {
 }
 
 .show-log {
-  background-color: #4f46e5;
-  color: var(--white);
-  display: block;
+  color: #4f46e5;
+  display: inline;
+  float: right;
   margin: 0 auto;
   text-align: center;
 
+}
+
+#no-log-message {
+  color: var(--primary);
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  padding: 1.5rem;
+ }
+
+ .blink {
+    animation: blink-animation 1s steps(1, start) infinite;
+}
+
+@keyframes blink-animation {
+    50% {
+        visibility: hidden;
+    }
 }

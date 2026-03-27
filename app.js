@@ -1,16 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // --- 1. STATE ---
     const state = {
-        duration: 0, 
+        duration: 0,
         timerState: "idle", // "idle" | "running" | "paused" | "completed"  
         elapsedTime: 0,
         intervalId: null,
         logs: JSON.parse(localStorage.getItem('focusLogs')) || [],
-        showLogStaus: false,
+        isLogVisible: false,
     };
 
-  
+
 
 
 
@@ -28,17 +28,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const logTable = document.getElementById('logTableBody');
     const saveBtn = document.getElementById('saveReport');
     const timeRemainingDisplay = document.getElementById('timerRemaining');
-    const logSection = document.getElementById('log-section'); 
-    const inputWarning = document.getElementById('warning-section'); 
-    const sessionMsg = document.getElementById('session-comp-sec'); 
+
+    const inputWarning = document.getElementById('warning-section');
+    const sessionMsg = document.getElementById('session-comp-sec');
     const totalFocusDisplay = document.getElementById("totalFocus");
     const totalSessionsDisplay = document.getElementById("totalSessions");
     const saveRepMsg = document.getElementById('save-report-section');
-    const sesstionWriteMsg = document.querySelector("#session-write-msg"); 
+    const sesstionWriteMsg = document.querySelector("#session-write-msg");
     const currentStreakDisplay = document.getElementById("currentStreak");
     const bestStreakDisplay = document.getElementById("bestStreak");
-    const showLogBtn = document.getElementById("show-log-btn"); 
-    
+    const logSection = document.getElementById('log-section');
+    const showLogBtn = document.getElementById("show-log-btn");
+
+    const noLogMsg = document.getElementById('no-log-message');
+    const hasLogs = state.logs.length > 0;
+
 
 
     updateSummary();
@@ -99,8 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateUI() {
         const timeRemaining = state.duration - state.elapsedTime;
         timerDisplay.textContent = `${formatTime(timeRemaining)}`;
-        
-        
+
+
 
         // Button and Status Logic
         switch (state.timerState) {
@@ -111,14 +115,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 radioContainer.classList.add('hidden');
                 inputGroupDiv.classList.add('hidden')
                 notesInput.disabled = true;
-                timeRemainingDisplay.classList.remove("hidden"); 
+                timeRemainingDisplay.classList.remove("hidden");
                 timerDisplay.classList.add('green');
-                inputWarning.classList.add('hidden'); 
+                inputWarning.classList.add('hidden');
                 break;
             case 'paused':
                 statusText.textContent = "Status: Paused";
                 toggleBtn.textContent = "Resume Session";
-                
+
                 break;
             case 'completed':
                 statusText.textContent = "Status: Completed";
@@ -126,9 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 notesInput.disabled = false;
                 timerDisplay.classList.remove('green');
                 timerDisplay.classList.add('completed');
-                logSection.classList.remove('hidden'); 
-                showLogBtn.classList.add('hidden');
-                
+                // logSection.classList.remove('hidden'); 
+                state.isLogVisible = true;
+                showLogBtn.textContent = "Hide Log ↑"; // Using Unicode arrow
+
                 break;
             case 'idle':
                 statusText.textContent = "Status: Ready";
@@ -186,11 +191,29 @@ document.addEventListener('DOMContentLoaded', () => {
         bestStreakDisplay.textContent = `🏆 Best Streak: ${bestStreak} days`;
     }
 
+    
+    function showhidelog() {
+        //console.log(state.isLogVisible);
+        if (state.isLogVisible) {
+            logSection.classList.add('hidden');
+            state.isLogVisible = false;
+            showLogBtn.innerHTML = "Show Log &darr;"
+
+        }
+        else {
+            logSection.classList.remove('hidden');
+            renderLogs();
+            state.isLogVisible = true;
+            showLogBtn.innerHTML = "Hide Log &uarr;"
+        }
+    }
+
+
     // --- 4. CORE TIMER LOGIC ---
 
     function startTimer() {
         if (state.timerState === "running") return;
-        
+
         state.timerState = 'running';
         syncTaskTitle(); // Only update title when starting
 
@@ -216,16 +239,16 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(state.intervalId);
         state.intervalId = null;
         sessionMsg.textContent = "Congrats! Session Complete.";
-        saveBtn.disabled = false; 
+        saveBtn.disabled = false;
         setTimeout(() => {
             sessionMsg.classList.add("hidden");
         }, 3000);
-        sesstionWriteMsg.textContent ="Write Session Notes Now!"; 
+        sesstionWriteMsg.textContent = "Write Session Notes Now!";
         sesstionWriteMsg.style.setProperty('--pseudo-color', 'red');
         notesInput.focus();
 
 
-        
+
         updateUI();
     }
 
@@ -242,10 +265,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateUI();
     }
 
-    
+
     // --- 5. LOGGING LOGIC ---
 
-        
+
     function deleteLog(id) {
 
         state.logs = state.logs.filter(item => item.id !== id);
@@ -262,6 +285,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // logSection.classList.remove('hidden');
         logTable.innerHTML = "";
 
+        if (!hasLogs) {
+            console.log("if"+state.logs);
+            noLogMsg.innerHTML = "No sessions yet. Start your first Bliss Hour."
+        }
+
+        else {
+        console.log("else"+state.logs);
+        noLogMsg.innerHTML = "";
         // ✅ Step 1: Ensure all logs have createdAt
         state.logs.forEach(log => {
             if (!log.createdAt) {
@@ -283,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // ✅ Step 3: Render
         sortedLogs.forEach(item => {
-            
+
             const formattedDate = formatDate(item.createdAt);
             const newRow = document.createElement('tr');
 
@@ -306,6 +337,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             logTable.appendChild(newRow);
         });
+
+        }
     }
 
 
@@ -322,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add to our list
         state.logs.push(newEntry);
-        
+
         // Save to browser memory (Local Storage) as a JSON string
         localStorage.setItem('focusLogs', JSON.stringify(state.logs));
 
@@ -332,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSummary();
         updateStreaks();
         // alert("Saved to browser memory!");
-        saveRepMsg.textContent = "Saved to browser memory!"; 
+        saveRepMsg.textContent = "Saved to browser memory!";
     }
 
     // --- 6. EVENT LISTENERS ---
@@ -344,8 +377,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Check validation before starting
             const selectedValue = getSelectedDuration();
             if (!taskTitleInput.value.trim() || !selectedValue) {
-                
-                inputWarning.classList.remove('hidden'); 
+
+                inputWarning.classList.remove('hidden');
 
                 inputWarning.textContent = "Please enter a valid task title and choose the Session Duration"
                 return;
@@ -363,25 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    
+
     saveBtn.addEventListener('click', saveToLog);
 
+    showLogBtn.addEventListener('click', showhidelog);
 
-    showLogBtn.addEventListener('click', () => {
-    let logS = document.getElementById('log-section'); 
 
-    if (state.showLogStaus === false) {
-        // SHOW LOGIC
-        renderLogs(); 
-        logS.classList.remove('hidden'); // Ensure it's visible
-        showLogBtn.textContent = "Hide Log ↑"; // Using Unicode arrow
-        state.showLogStaus = true; // UPDATE STATE
-    }
-    else {
-        // HIDE LOGIC
-        logS.classList.add('hidden'); 
-        showLogBtn.textContent = "Show Log ↓"; // Using Unicode arrow
-        state.showLogStaus = false; // UPDATE STATE
-    }
-});
 });
