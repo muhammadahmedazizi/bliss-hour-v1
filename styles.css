@@ -315,6 +315,51 @@ hr {
     text-decoration: underline;
 }
 
+.delete-btn {
+    transition: all 0.2s ease;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+/* The "Modern" Confirmation State */
+.delete-btn.confirming {
+    background-color: #ff4d4d;
+    color: white;
+    border-color: #cc0000;
+    font-weight: bold;
+}
+
+/* Styling Toast Notification with Doble Tap Delete Button */ 
+#toast {
+    visibility: hidden;
+    min-width: 200px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%); /* Centers it */
+    font-family: sans-serif;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+#toast.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+@keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+
+
+
  .blink {
     animation: blink-animation 1s steps(1, start) infinite;
 }

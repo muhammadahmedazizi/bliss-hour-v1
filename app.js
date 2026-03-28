@@ -201,6 +201,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function showToast(message) {
+        const toast = document.getElementById("toast");
+        toast.textContent = message; // Set the message dynamically
+        toast.className = "show";
+        
+        // Remove the 'show' class after 3 seconds so it can be triggered again
+        setTimeout(() => { 
+            toast.className = toast.className.replace("show", ""); 
+        }, 3000);
+    }
+
 
     // --- 4. CORE TIMER LOGIC ---
 
@@ -271,6 +282,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderLogs();
         updateSummary();
         updateStreaks();
+
+        showToast("Record deleted successfully"); // <--- The feedback
     }
 
     function renderLogs() {
@@ -343,10 +356,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     </td>
             `;
 
-                newRow.querySelector('.delete-btn').addEventListener('click', () => {
-                    const result = confirm("Really, Delete this record?");
-                    if (result) {
+                // ... double tap delete button ...
+                const deleteBtn = newRow.querySelector('.delete-btn');
+
+                deleteBtn.addEventListener('click', () => {
+                    // Check if the button is already in "confirm" mode
+                    if (deleteBtn.classList.contains('confirming')) {
                         deleteLog(item.id);
+                    } else {
+                        // First click: Change the button appearance
+                        deleteBtn.classList.add('confirming');
+                        deleteBtn.textContent = 'Are you sure?';
+                        
+                        // Optional: Reset the button if they don't click again within 3 seconds
+                        setTimeout(() => {
+                            deleteBtn.classList.remove('confirming');
+                            deleteBtn.textContent = 'Delete';
+                        }, 3000);
                     }
                 });
 
