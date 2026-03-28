@@ -292,6 +292,29 @@ hr {
   padding: 1.5rem;
  }
 
+  /* Collapse Expand User Notes*/
+
+.more-text {
+    display: none;
+}
+.more-text.is-visible {
+    display: inline;
+}
+
+.toggle-text-btn {
+    background: none;
+    border: none;
+    color: var(--primary); 
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9em;
+    margin-left: 5px;
+}
+
+.toggle-text-btn:hover {
+    text-decoration: underline;
+}
+
  .blink {
     animation: blink-animation 1s steps(1, start) infinite;
 }

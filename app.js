@@ -10,10 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
         isLogVisible: false,
     };
 
-
-
-
-
     // --- 2. DOM ELEMENTS ---
     const inputGroupDiv = document.getElementById('input-group');
     const timerDisplay = document.getElementById('timerDisplay');
@@ -28,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const logTable = document.getElementById('logTableBody');
     const saveBtn = document.getElementById('saveReport');
     const timeRemainingDisplay = document.getElementById('timerRemaining');
-
     const inputWarning = document.getElementById('warning-section');
     const sessionMsg = document.getElementById('session-comp-sec');
     const totalFocusDisplay = document.getElementById("totalFocus");
@@ -39,9 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bestStreakDisplay = document.getElementById("bestStreak");
     const logSection = document.getElementById('log-section');
     const showLogBtn = document.getElementById("show-log-btn");
-
     const noLogMsg = document.getElementById('no-log-message');
-    const hasLogs = state.logs.length > 0;
 
 
 
@@ -191,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bestStreakDisplay.textContent = `🏆 Best Streak: ${bestStreak} days`;
     }
 
-    
+
     function showhidelog() {
         //console.log(state.isLogVisible);
         if (state.isLogVisible) {
@@ -284,59 +277,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // logSection.classList.remove('hidden');
         logTable.innerHTML = "";
+        const hasLogs = state.logs.length > 0;
 
         if (!hasLogs) {
-            console.log("if"+state.logs);
             noLogMsg.innerHTML = "No sessions yet. Start your first Bliss Hour."
         }
 
         else {
-        console.log("else"+state.logs);
-        noLogMsg.innerHTML = "";
-        // ✅ Step 1: Ensure all logs have createdAt
-        state.logs.forEach(log => {
-            if (!log.createdAt) {
-                log.createdAt = new Date().toISOString();
-            }
-        });
+            console.log("else" + state.logs);
+            noLogMsg.innerHTML = "";
 
-        // ✅ Step 2: Sort logs
-        const sortedLogs = [...state.logs].sort((a, b) => {
-
-            const dateDiff = new Date(b.createdAt) - new Date(a.createdAt);
-
-            if (dateDiff === 0) {
-                return b.id - a.id;
-            }
-
-            return dateDiff;
-        });
-
-        // ✅ Step 3: Render
-        sortedLogs.forEach(item => {
-
-            const formattedDate = formatDate(item.createdAt);
-            const newRow = document.createElement('tr');
-
-            newRow.innerHTML = `
-                <td>${formattedDate}</td>
-                <td>${item.goal}</td>
-                <td>${item.duration}</td>
-                <td>${item.note}</td>
-                <td>
-                    <button class="delete-btn" data-id="${item.id}">Delete</button>
-                </td>
-            `;
-
-            newRow.querySelector('.delete-btn').addEventListener('click', () => {
-                const result = confirm("Really, Delete this record?");
-                if (result) {
-                    deleteLog(item.id);
+            // Ensure all logs have createdAt
+            state.logs.forEach(log => {
+                if (!log.createdAt) {
+                    log.createdAt = new Date().toISOString();
                 }
             });
 
-            logTable.appendChild(newRow);
-        });
+            // Sort logs
+            const sortedLogs = [...state.logs].sort((a, b) => {
+
+                const dateDiff = new Date(b.createdAt) - new Date(a.createdAt);
+
+                if (dateDiff === 0) {
+                    return b.id - a.id;
+                }
+
+                return dateDiff;
+            });
+
+            // Render
+            sortedLogs.forEach(item => {
+
+                const formattedDate = formatDate(item.createdAt);
+                const newRow = document.createElement('tr');
+
+                const words = item.note.trim().split(/\s+/);
+                const isLong = words.length > 40;
+
+                let noteHTML = '';
+                if (isLong) {
+                    const firstPart = words.slice(0, 40).join(' ');
+                    const secondPart = words.slice(40).join(' ');
+                    
+                    // Wrap the extra text in a hidden span
+                    noteHTML = `
+                        ${firstPart}
+                        <span class="more-text" style="display: none;"> ${secondPart}</span>
+                        <button class="toggle-text-btn" >... show full text</button>
+                    `;
+                } else {
+                    noteHTML = item.note;
+                }
+
+                newRow.innerHTML = `
+                    <td>${formattedDate}</td>
+                    <td>${item.goal}</td>
+                    <td>${item.duration}</td>
+                    <td class="note-cell">
+                        ${noteHTML}
+                    </td>
+                   
+                    <td>
+                        <button class="delete-btn" data-id="${item.id}">Delete</button>
+                    </td>
+            `;
+
+                newRow.querySelector('.delete-btn').addEventListener('click', () => {
+                    const result = confirm("Really, Delete this record?");
+                    if (result) {
+                        deleteLog(item.id);
+                    }
+                });
+
+                logTable.appendChild(newRow);
+            });
 
         }
     }
@@ -370,6 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 6. EVENT LISTENERS ---
 
+    // Start & Pause Timer
     toggleBtn.addEventListener('click', () => {
         if (state.timerState === 'running') {
             pauseTimer();
@@ -388,6 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Reset Button
     resetButton.addEventListener('click', resetTimer);
 
     radioContainer.addEventListener('change', (e) => {
@@ -396,10 +413,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-
+    // Save Log Button
     saveBtn.addEventListener('click', saveToLog);
 
+    // Show Log on User's Will
     showLogBtn.addEventListener('click', showhidelog);
 
+    document.querySelector('table').addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('toggle-text-btn')) {
+        const btn = e.target;
+        const moreText = btn.previousElementSibling; // The .more-text span
+        
+        if (moreText.style.display === "none") {
+            moreText.style.display = "inline";
+            btn.textContent = " show less";
+        } else {
+            moreText.style.display = "none";
+            btn.textContent = "... show full text";
+        }
+    }
+});
 
 });
