@@ -279,7 +279,6 @@ hr {
   color: #4f46e5;
   display: inline;
   float: right;
-  margin: 0 auto;
   text-align: center;
 
 }
@@ -368,4 +367,41 @@ hr {
     50% {
         visibility: hidden;
     }
+}
+
+
+.log-header {
+    display: flex;
+    justify-content: space-between; /* Title left, Button right */
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee; /* Optional: adds a nice separator */
+}
+
+.log-history-title {
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Add some space for the Download button inside the section */
+.table-toolbar {
+    display: flex;
+    justify-content: flex-end; /* Pushes the CSV button to the far right */
+    padding-bottom: 10px;      /* Gap between button and table headers */
+}
+
+.secondary-btn {
+  margin-top: 1rem;
+    background: var(--text-muted);
+    /* border: 1px solid #d1d5db; */
+    color: var(--white);
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.secondary-btn:hover {
+    background-color: var(--text-main);
+    border-color: #9ca3af;
 }

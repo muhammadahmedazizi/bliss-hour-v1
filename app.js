@@ -205,10 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const toast = document.getElementById("toast");
         toast.textContent = message; // Set the message dynamically
         toast.className = "show";
-        
+
         // Remove the 'show' class after 3 seconds so it can be triggered again
-        setTimeout(() => { 
-            toast.className = toast.className.replace("show", ""); 
+        setTimeout(() => {
+            toast.className = toast.className.replace("show", "");
         }, 3000);
     }
 
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isLong) {
                     const firstPart = words.slice(0, 40).join(' ');
                     const secondPart = words.slice(40).join(' ');
-                    
+
                     // Wrap the extra text in a hidden span
                     noteHTML = `
                         ${firstPart}
@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         // First click: Change the button appearance
                         deleteBtn.classList.add('confirming');
                         deleteBtn.textContent = 'Are you sure?';
-                        
+
                         // Optional: Reset the button if they don't click again within 3 seconds
                         setTimeout(() => {
                             deleteBtn.classList.remove('confirming');
@@ -409,7 +409,74 @@ document.addEventListener('DOMContentLoaded', () => {
         saveRepMsg.textContent = "Saved to browser memory!";
     }
 
-    // --- 6. EVENT LISTENERS ---
+    
+    // ---6 CSV EXPORT 
+    function exportToCSV() {
+    if (state.logs.length === 0) {
+        showToast("No data to export!");
+        return;
+    }
+
+    // 1. Define the headers
+    const headers = ["Date", "Goal", "Duration (min)", "Observation"];
+
+    // 2. Map your log data into rows with human-readable dates
+    const rows = state.logs.map(item => {
+        // Convert ISO string to a friendly format: e.g., "28 Mar 2026, 11:36 AM"
+        const dateObj = new Date(item.createdAt);
+        const readableDate = dateObj.toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        // Clean up the note to handle commas and double-quotes correctly for CSV
+        const cleanNote = item.note ? item.note.replace(/"/g, '""') : "";
+
+        return [
+            `"${readableDate}"`,
+            `"${item.goal}"`,
+            item.duration,
+            `"${cleanNote}"`
+        ];
+    });
+
+    // 3. Combine headers and rows into one big string
+    const csvContent = [headers, ...rows]
+        .map(e => e.join(","))
+        .join("\n");
+
+    // 4. Create a Blob with a "Byte Order Mark" (BOM) to fix Excel encoding issues
+    const blob = new Blob(["\ufeff", csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    // 5. Create and trigger the download link
+    const link = document.createElement("a");
+    
+    // Creates a format like: focus_logs_2026-03-28_14-30.csv
+    const now = new Date();
+    const datePart = now.toISOString().split('T')[0]; // 2026-03-28
+    const timePart = now.getHours().toString().padStart(2, '0') + '-' + 
+                    now.getMinutes().toString().padStart(2, '0');
+
+    const fileName = `focus_logs_${datePart}_${timePart}.csv`;
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", fileName);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showToast("CSV Exported successfully!");
+}
+
+
+    // --- 7. EVENT LISTENERS ---
 
     // Start & Pause Timer
     toggleBtn.addEventListener('click', () => {
@@ -430,6 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
     // Reset Button
     resetButton.addEventListener('click', resetTimer);
 
@@ -445,19 +513,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show Log on User's Will
     showLogBtn.addEventListener('click', showhidelog);
 
-    document.querySelector('table').addEventListener('click', function(e) {
-    if (e.target && e.target.classList.contains('toggle-text-btn')) {
-        const btn = e.target;
-        const moreText = btn.previousElementSibling; // The .more-text span
-        
-        if (moreText.style.display === "none") {
-            moreText.style.display = "inline";
-            btn.textContent = " show less";
-        } else {
-            moreText.style.display = "none";
-            btn.textContent = "... show full text";
+    document.querySelector('table').addEventListener('click', function (e) {
+        if (e.target && e.target.classList.contains('toggle-text-btn')) {
+            const btn = e.target;
+            const moreText = btn.previousElementSibling; // The .more-text span
+
+            if (moreText.style.display === "none") {
+                moreText.style.display = "inline";
+                btn.textContent = " show less";
+            } else {
+                moreText.style.display = "none";
+                btn.textContent = "... show full text";
+            }
         }
-    }
-});
+    });
+
+    // EventListner for CSV Export 
+    document.getElementById('exportBtn').addEventListener('click', exportToCSV);
 
 });
